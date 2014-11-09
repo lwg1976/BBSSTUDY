@@ -34,9 +34,9 @@
 
 <%
 	request.setCharacterEncoding("UTF-8");
-
-	Class.forName("com.mysql.jdbc.Driver");
 	
+	Class.forName("com.mysql.jdbc.Driver");
+
 	String url = "jdbc:mysql://localhost:3306/boarddb";
 	String id = "root";
 	String pass = "wind7622";
@@ -51,7 +51,7 @@
 		Connection conn = DriverManager.getConnection(url, id, pass);
 		Statement stmt = conn.createStatement();
 		
-		String sql = "SELECT USERNAME, PASSWORD, TITLE, MEMO FROM board2 WHERE NUM=" + idx;
+		String sql = "SELECT USERNAME, PASSWORD, TITLE, MEMO FROM board3 WHERE NUM=" + idx;
 		ResultSet rs = stmt.executeQuery(sql);
 		
 		if(rs.next())
@@ -75,7 +75,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>게시글 수정 (두 번째)</title>
+	<title>게시판 - 수정 (세 번째)</title>
 </head>
 
 <body>
@@ -84,7 +84,7 @@
 			<tr>
 				<td>
 					<table width="100%" cellpadding="0" cellspacing="0" border="0">
-						<tr style="background:url('img/table_mid.gif') repeat-x; test-align:center;">
+						<tr style="background:url('img/table_mid.gif') repeat-x; text-align:center;">
 							<td width="5"><img src="img/table_left.gif" width="5" height="30" /></td>
 							<td>수정</td>
 							<td width="5"><img src="img/table_right.gif" width="5" height="30" /></td>
@@ -95,28 +95,28 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">제목</td>
-							<td><input type="text" name="title" size="50" maxlength="50" value="<%=title %>"></td>
+							<td><input name="title" size="50" maxlength="50" value="<%=title %>" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">이름</td>
-							<td><%=name %><input type="hidden" name="name" size="50" maxlength="50" value="<%=name %>"></td>
+							<td><%=name %><input type="hidden" name="name" size="50" maxlength="50" value="<%=name %>" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">비밀번호</td>
-							<td><input type="password" name="password" id="pass" size="50" maxlength="50"></td>
+							<td><input type="password" name="password" id="pass" size="50" maxlength="50" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">내용</td>
-							<td><textarea name="memo" cols="50" rows="13"><%=memo %></textarea></td>
+							<td><textarea name="memo" cols="50" rows="13"></textarea></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>
@@ -131,8 +131,8 @@
 						</tr>
 					</table>
 				</td>
-			<tr>
-		</form>				
+			</tr>
+		</form>
 	</table>
 </body>
 </html>
