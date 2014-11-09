@@ -41,6 +41,7 @@
 
 <%
 	int idx = Integer.parseInt(request.getParameter("idx"));
+	int pg = Integer.parseInt(request.getParameter("pg"));
 
 	Class.forName("com.mysql.jdbc.Driver");
 	
@@ -79,7 +80,7 @@
 
 <body>
 	<table>
-		<form name="replyform" method="post" action="reply_ok.jsp?idx=<%=idx %>">
+		<form name="replyform" method="post" action="reply_ok.jsp?idx=<%=idx %>&pg=<%=pg %>">
 			<tr>
 				<td>
 					<table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -108,7 +109,7 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">비밀번호</td>
-							<td><input name="password" size="50" maxlength="50" /></td>
+							<td><input type="password" name="password" size="50" maxlength="50" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>

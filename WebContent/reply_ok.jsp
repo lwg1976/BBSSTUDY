@@ -16,6 +16,7 @@
 	String title = request.getParameter("title");
 	String memo = request.getParameter("memo");
 	int idx = Integer.parseInt(request.getParameter("idx"));
+	int pg = Integer.parseInt(request.getParameter("pg"));
 	
 	try {
 		int ref = 0;
@@ -62,5 +63,5 @@
 
 <script language="javascript">
 	self.window.alert("입력한 글을 저장하였습니다.");
-	location.href="list.jsp";
+	location.href="list.jsp?pg=<%=pg %>";
 </script>

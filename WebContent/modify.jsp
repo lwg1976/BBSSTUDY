@@ -46,6 +46,7 @@
 	String title = "";
 	String memo = "";
 	int idx = Integer.parseInt(request.getParameter("idx"));
+	int pg = Integer.parseInt(request.getParameter("pg"));
 	
 	try {
 		Connection conn = DriverManager.getConnection(url, id, pass);
@@ -80,7 +81,7 @@
 
 <body>
 	<table>
-		<form name=modifyform method=post action="modify_ok.jsp?idx=<%=idx %>">
+		<form name=modifyform method=post action="modify_ok.jsp?idx=<%=idx %>&pg=<%=pg %>">
 			<tr>
 				<td>
 					<table width="100%" cellpadding="0" cellspacing="0" border="0">

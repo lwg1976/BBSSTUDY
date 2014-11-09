@@ -1,14 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, java.text.SimpleDateFormat, java.util.Date" %>
+
+<%
+	final int ROWSIZE = 10;
+	final int BLOCK = 5;
+	
+	int pg = 1;
+	
+	if(request.getParameter("pg")!=null)
+	{
+		pg = Integer.parseInt(request.getParameter("pg"));
+	}
+	
+	int start = (pg*ROWSIZE) - (ROWSIZE-1);
+	int end = (pg*ROWSIZE);
+	
+	int allPage = 0;
+	
+	int startPage = ((pg-1)/BLOCK*BLOCK)+1;
+	int endPage = ((pg-1)/BLOCK*BLOCK)+BLOCK;
+%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
-
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>게시판</title>
+	<title>게시판 - 목록 (첫 번째)</title>
 </head>
 
 <body>
@@ -18,12 +37,15 @@
 	String url = "jdbc:mysql://localhost:3306/boarddb";
 	String id = "root";
 	String pass = "wind7622";
+	
 	int total = 0;
 	
 	try {
 		Connection conn = DriverManager.getConnection(url, id, pass);
 		Statement stmt = conn.createStatement();
+		Statement stmt1 = conn.createStatement();
 		
+		String sql = "";
 		String sqlCount = "SELECT COUNT(*) FROM board";
 		ResultSet rs = stmt.executeQuery(sqlCount);
 		
@@ -31,17 +53,33 @@
 			total = rs.getInt(1);
 		}
 		
-		rs.close();
+		int sort = 1;
+		String sqlSort = "SELECT NUM FROM board ORDER BY REF DESC, STEP ASC";
+		rs = stmt.executeQuery(sqlSort);
+		
+		while(rs.next())
+		{
+			int stepNum = rs.getInt(1);
+			sql = "UPDATE board SET STEP2=" + sort + " WHERE NUM=" + stepNum;
+			stmt1.executeUpdate(sql);
+			sort++;
+		}
+		
+		allPage = (int)Math.ceil(total/(double)ROWSIZE);
+		
+		if(endPage > allPage)
+		{
+			endPage = allPage;
+		}
+		
 		out.print("총 게시물 : " + total + "개");
 		
-		String sqlList = "SELECT NUM, USERNAME, TITLE, TIME, HIT, INDENT FROM board ORDER BY REF DESC, STEP ASC";
+		String sqlList = "SELECT NUM, USERNAME, TITLE, TIME, HIT, INDENT FROM board"
+				+ " WHERE STEP2 >=" + start + " AND STEP2 <=" + end + " ORDER BY STEP2 ASC";
 		rs = stmt.executeQuery(sqlList);
 %>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
-		<tr height="5">
-			<td width="5">
-			</td>
-		</tr>
+		<tr height="5"><td width="5"></td></tr>
 		<tr style="background:url('img/table_mid.gif') repeat-x; text-align:center;">
 			<td width="5"><img src="img/table_left.gif" width"5" height="30" /></td>
 			<td width="73">번호</td>
@@ -66,6 +104,11 @@
 				String time = rs.getString(4);
 				int hit = rs.getInt(5);
 				int indent = rs.getInt(6);
+				
+				Date date = new Date();
+				SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
+				String year = (String)simpleDate.format(date);
+				String yea = time.substring(0,10);
 %>
 		<tr height="25" align="center">
 			<td>&nbsp;</td>
@@ -86,10 +129,18 @@
 <%
 				}
 %>
-				<a href="view.jsp?idx=<%=idx %>"><%=title %></a>
+				<a href="view.jsp?idx=<%=idx %>&pg=<%=pg %>"><%=title %></a>
+<%
+				if(year.equals(yea))
+				{
+%>
+				<img src='img/new.jpg' />
+<%
+				}
+%>
 			</td>
 			<td align="center"><%=name %></td>
-			<td align="center"><%=time %></td>
+			<td align="center"><%=yea %></td>
 			<td align="center"><%=hit %></td>
 			<td>&nbsp;</td>
 		</tr>
@@ -115,6 +166,41 @@
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tr>
 			<td colspan="4" height="5"></td>
+		</tr>
+		<tr>
+			<td align="center">
+<%
+	if(pg > BLOCK)
+	{
+%>
+				[<a href="list.jsp?pg=1">◀◀</a>]
+				[<a href="list.jsp?pg=<%=startPage-1 %>">◀</a>]
+<%
+	}
+
+	for(int i=startPage; i<=endPage; i++)
+	{
+		if(i==pg)
+		{
+%>
+				<u><b>[<%=i %>]</b></u>
+<%
+		} else {
+%>
+				[<a href="list.jsp?pg=<%=i %>"><%=i %></a>]
+<%
+		}
+	}
+
+	if(endPage < allPage)
+	{
+%>
+				[<a href="list.jsp?pg=<%=endPage+1 %>">▶</a>]
+				[<a href="list.jsp?pg=<%=allPage %>">▶▶</a>]
+<%
+	}
+%>
+			</td>
 		</tr>
 		<tr align="center">
 			<td>

@@ -19,6 +19,7 @@
 
 <%
 	int idx = Integer.parseInt(request.getParameter("idx"));
+	int pg = Integer.parseInt(request.getParameter("pg"));
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -30,7 +31,7 @@
 
 <body>
 	<table>
-		<form name=deleteform method=post action="delete_ok.jsp?idx=<%=idx %>">
+		<form name=deleteform method=post action="delete_ok.jsp?idx=<%=idx %>&pg=<%=pg %>">
 			<tr>
 				<td>
 					<table width="100%" cellpadding="0" cellspacing="0" border="0">

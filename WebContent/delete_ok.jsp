@@ -10,8 +10,10 @@
 	String url = "jdbc:mysql://localhost:3306/boarddb";
 	String id = "root";
 	String pass = "wind7622";
+	
 	String password = null;
 	int idx = Integer.parseInt(request.getParameter("idx"));
+	int pg = Integer.parseInt(request.getParameter("pg"));
 	String passwd = request.getParameter("password");
 	
 	try {
@@ -33,7 +35,7 @@
 %>
 <script language=javascript>
 	self.window.alert("해당 글을 삭제하였습니다.");
-	location.href="list.jsp";
+	location.href="list.jsp?pg=<%=pg %>";
 </script>
 <%
 			rs.close();

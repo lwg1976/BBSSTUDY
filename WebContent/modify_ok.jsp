@@ -15,6 +15,7 @@
 		request.setCharacterEncoding("UTF-8");
 		
 		int idx = Integer.parseInt(request.getParameter("idx"));
+		int pg = Integer.parseInt(request.getParameter("pg"));
 		String title = request.getParameter("title");
 		String memo = request.getParameter("memo");
 		String passwd = request.getParameter("password");
@@ -37,7 +38,7 @@
 %>
 <script language=javascript>
 	self.window.alert("글이 수정되었습니다.");
-	location.href="view.jsp?idx=<%=idx %>";
+	location.href="view.jsp?idx=<%=idx %>&pg=<%=pg %>";
 </script>
 <%
 			rs.close();
