@@ -35,12 +35,6 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	Class.forName("com.mysql.jdbc.Driver");
-	
-	String url = "jdbc:mysql://localhost:3306/boarddb";
-	String id = "root";
-	String pass = "wind7622";
-	
 	String name = "";
 	String password = "";
 	String title = "";
@@ -49,7 +43,15 @@
 	int pg = Integer.parseInt(request.getParameter("pg"));
 	
 	try {
-		Connection conn = DriverManager.getConnection(url, id, pass);
+		Class.forName("org.apache.commons.dbcp.PoolingDriver");
+		Connection conn = DriverManager.getConnection
+				("jdbc:apache:commons:dbcp:/wdbpool");
+		
+		if(conn==null)
+		{
+			throw new Exception("데이터베이스에 연결할 수 없습니다.");
+		}
+		
 		Statement stmt = conn.createStatement();
 		
 		String sql = "SELECT USERNAME, PASSWORD, TITLE, MEMO FROM board WHERE NUM=" + idx;

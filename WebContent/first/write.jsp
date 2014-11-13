@@ -1,11 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
 
-<script language="javascript">	// 자바스크립트 시작
-	function replyCheck()
+<script languae="javascript">	// 자바 스크립트 시작
+	function writeCheck()
 	{
-		var form = document.replyform;
+		var form = document.writeform;
 		
 		if(!form.name.value)	// form에 있는 name 값이 없을 때
 		{
@@ -24,7 +23,7 @@
 		if(!form.title.value)
 		{
 			alert("제목을 적어주세요.");
-			form.title.focus();
+			from.title.focul();
 			return;
 		}
 		
@@ -34,62 +33,28 @@
 			form.memo.focus();
 			return;
 		}
-		
+			
 		form.submit();
 	}
 </script>
-
-<%
-	int idx = Integer.parseInt(request.getParameter("idx"));
-	int pg = Integer.parseInt(request.getParameter("pg"));
-
-	String title = "";
-	
-	try {
-		Class.forName("org.apache.commons.dbcp.PoolingDriver");
-		Connection conn = DriverManager.getConnection
-				("jdbc:apache:commons:dbcp:/wdbpool");
-		
-		if(conn==null)
-		{
-			throw new Exception("데이터베이스에 연결할 수 없습니다.");
-		}
-		
-		Statement stmt = conn.createStatement();
-		
-		String sql = "SELECT TITLE FROM board WHERE NUM=" + idx;
-		ResultSet rs = stmt.executeQuery(sql);
-		
-		if(rs.next())
-		{
-			title = rs.getString(1);
-		}
-		
-		rs.close();
-		stmt.close();
-		conn.close();
-	} catch(SQLException e) {
-		
-	}
-%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>답글</title>
+	<title>게시판 글쓰기</title>
 </head>
 
 <body>
 	<table>
-		<form name="replyform" method="post" action="reply_ok.jsp?idx=<%=idx %>&pg=<%=pg %>">
+		<form name=writeform method=post action="write_ok.jsp">
 			<tr>
 				<td>
 					<table width="100%" cellpadding="0" cellspacing="0" border="0">
 						<tr style="background:url('img/table_mid.gif') repeat-x; text-align:center;">
 							<td width="5"><img src="img/table_left.gif" width="5" height="30" /></td>
-							<td>답글</td>
+							<td>글쓰기</td>
 							<td width="5"><img src="img/table_right.gif" width="5" height="30" /></td>
 						</tr>
 					</table>
@@ -98,10 +63,12 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">제목</td>
-							<td><input name="title" size="50" maxlength="100" value="[답글] <%=title %>" /></td>
+							<td><input name="title" size="50" maxlength="100" /></td>
 							<td>&nbsp;</td>
 						</tr>
-						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>
+						<tr height="1" bgcolor="#dddddd">
+							<td colspan="4"></td>
+						</tr>
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">이름</td>
@@ -127,8 +94,9 @@
 						<tr align="center">
 							<td>&nbsp;</td>
 							<td colspan="2">
-								<input type=button value="등록" OnClick="javascript:replyCheck();" />
-								<input type=button value="취소" OnClick="javascript:history.back(-1)" />
+								<input type=button value="등록" Onclick="javascript:writeCheck();" />
+								<input type=button value="취소" Onclick="javascript:history.back(-1)" />
+							</td>
 							<td>&nbsp;</td>
 						</tr>
 					</table>

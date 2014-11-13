@@ -3,6 +3,12 @@
 <%@ page import="java.sql.*" %>
 
 <%
+	Class.forName("com.mysql.jdbc.Driver");
+
+	String url = "jdbc:mysql://localhost:3306/boarddb";
+	String id = "root";
+	String pass = "wind7622";
+	
 	String password = ""; 
 	
 	try {
@@ -14,15 +20,7 @@
 		String memo = request.getParameter("memo");
 		String passwd = request.getParameter("password");
 		
-		Class.forName("org.apache.commons.dbcp.PoolingDriver");
-		Connection conn = DriverManager.getConnection
-				("jdbc:apache:commons:dbcp:/wdbpool");
-		
-		if(conn==null)
-		{
-			throw new Exception("데이터베이스에 연결할 수 없습니다.");
-		}
-		
+		Connection conn = DriverManager.getConnection(url, id, pass);
 		Statement stmt = conn.createStatement();
 		
 		String sql = "SELECT PASSWORD FROM board WHERE NUM=" + idx;

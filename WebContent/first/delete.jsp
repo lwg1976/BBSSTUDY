@@ -35,7 +35,7 @@
 			<tr>
 				<td>
 					<table width="100%" cellpadding="0" cellspacing="0" border="0">
-						<tr style="background:url('img/table_mid.gif') repeat-x; text-align:center;">
+						<tr style="background:url('img/table_mid.gif') repeat-x text-align:center;">
 							<td width="5"><img src="img/table_left.gif" width="5" height="30" /></td>
 							<td>삭제</td>
 							<td width="5"><img src="img/table_right.gif" width="5" height="30" /></td>
