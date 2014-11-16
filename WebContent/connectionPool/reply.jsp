@@ -1,14 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="bbsModel1.*" %>
-
-<jsp:useBean id="dao" class="bbsModel1.DAO" />
-
-<%
-	int idx = Integer.parseInt(request.getParameter("idx"));
-	int pg = Integer.parseInt(request.getParameter("pg"));
-	VO vo = dao.getView(idx);
-%>
+<%@ page import="java.sql.*" %>
 
 <script language="javascript">	// 자바스크립트 시작
 	function replyCheck()
@@ -47,6 +39,40 @@
 	}
 </script>
 
+<%
+	int idx = Integer.parseInt(request.getParameter("idx"));
+	int pg = Integer.parseInt(request.getParameter("pg"));
+
+	String title = "";
+	
+	try {
+		Class.forName("org.apache.commons.dbcp.PoolingDriver");
+		Connection conn = DriverManager.getConnection
+				("jdbc:apache:commons:dbcp:/wdbpool");
+		
+		if(conn==null)
+		{
+			throw new Exception("데이터베이스에 연결할 수 없습니다.");
+		}
+		
+		Statement stmt = conn.createStatement();
+		
+		String sql = "SELECT TITLE FROM board WHERE NUM=" + idx;
+		ResultSet rs = stmt.executeQuery(sql);
+		
+		if(rs.next())
+		{
+			title = rs.getString(1);
+		}
+		
+		rs.close();
+		stmt.close();
+		conn.close();
+	} catch(SQLException e) {
+		
+	}
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
@@ -72,7 +98,7 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">제목</td>
-							<td><input name="title" size="50" maxlength="100" value="[답글] <%=vo.getTitle() %>" /></td>
+							<td><input name="title" size="50" maxlength="100" value="[답글] <%=title %>" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>

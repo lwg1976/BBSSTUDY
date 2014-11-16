@@ -1,7 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
+<%@ page import="bbsModel1.*" %>
 
+<jsp:useBean id="dao" class="bbsModel1.DAO" />
+<jsp:useBean id="vo1" class="bbsModel1.VO" />
+
+<%
+	int idx = Integer.parseInt(request.getParameter("idx"));
+	int pg = Integer.parseInt(request.getParameter("pg"));
+	VO vo = dao.getView(idx);
+%>
+	
 <script language=javascript>	// 자바스크립트 시작
 	function modifyCheck()
 	{
@@ -32,47 +41,6 @@
 	}
 </script>
 
-<%
-	request.setCharacterEncoding("UTF-8");
-	
-	String name = "";
-	String password = "";
-	String title = "";
-	String memo = "";
-	int idx = Integer.parseInt(request.getParameter("idx"));
-	int pg = Integer.parseInt(request.getParameter("pg"));
-	
-	try {
-		Class.forName("org.apache.commons.dbcp.PoolingDriver");
-		Connection conn = DriverManager.getConnection
-				("jdbc:apache:commons:dbcp:/wdbpool");
-		
-		if(conn==null)
-		{
-			throw new Exception("데이터베이스에 연결할 수 없습니다.");
-		}
-		
-		Statement stmt = conn.createStatement();
-		
-		String sql = "SELECT USERNAME, PASSWORD, TITLE, MEMO FROM board WHERE NUM=" + idx;
-		ResultSet rs = stmt.executeQuery(sql);
-		
-		if(rs.next())
-		{
-			name = rs.getString(1);
-			password = rs.getString(2);
-			title = rs.getString(3);
-			memo = rs.getString(4);
-		}
-		
-		rs.close();
-		stmt.close();
-		conn.close();
-	} catch(SQLException e) {
-		out.println(e.toString());
-	}
-%>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
@@ -98,14 +66,14 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">제목</td>
-							<td><input type="text" name="title" size="50" maxlength="50" value="<%=title %>" /></td>
+							<td><input type="text" name="title" size="50" maxlength="50" value="<%=vo.getTitle() %>" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">이름</td>
-							<td><%=name %><input type=hidden name="name" size="50" maxlength="50" value="<%=name %>" /></td>
+							<td><%=vo.getName() %><input type=hidden name="name" size="50" maxlength="50" value="<%=vo.getName() %>" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>
@@ -119,7 +87,7 @@
 						<tr>
 							<td>&nbsp;</td>
 							<td align="center">내용</td>
-							<td><textarea name="memo" cols="50" rows="13"><%=memo %></textarea></td>
+							<td><textarea name="memo" cols="50" rows="13"><%=vo.getMemo() %></textarea></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr height="1" bgcolor="#dddddd"><td colspan="4"></td></tr>

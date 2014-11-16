@@ -1,19 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" errorPage="DBError.jsp" %>
-<%@ page import="bbsModel1.*" %>
-<%@ page import="java.util.*" %>
-
-<jsp:useBean id='dao' class="bbsModel1.DAO" />
+<%@ page import="java.sql.*, java.text.SimpleDateFormat, java.util.Date" %>
 
 <%
-	int total = dao.count();
-	ArrayList<VO> aList = dao.getMemberList();
-	int size = aList.size();
-	int size2 = size;
-	
 	final int ROWSIZE = 10;
 	final int BLOCK = 5;
-	int indent = 0;
 	
 	int pg = 1;
 	
@@ -22,25 +13,13 @@
 		pg = Integer.parseInt(request.getParameter("pg"));
 	}
 	
-	int end = pg + ROWSIZE;
+	int start = (pg*ROWSIZE) - (ROWSIZE-1);
+	int end = (pg*ROWSIZE);
 	
 	int allPage = 0;
 	
 	int startPage = ((pg-1)/BLOCK*BLOCK)+1;
 	int endPage = ((pg-1)/BLOCK*BLOCK)+BLOCK;
-	
-	allPage = (int)Math.ceil(total/(double)ROWSIZE);
-	
-	if(endPage > allPage)
-	{
-		endPage = allPage;
-	}
-	
-	size2 -= end;
-	if(size2 < 0)
-	{
-		end = size;
-	}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -52,6 +31,55 @@
 </head>
 
 <body>
+<%
+	int total = 0;
+	
+	try {
+		Class.forName("org.apache.commons.dbcp.PoolingDriver");
+		Connection conn = DriverManager.getConnection
+				("jdbc:apache:commons:dbcp:/wdbpool");
+		
+		if(conn==null)
+		{
+			throw new Exception("데이터베이스에 연결할 수 없습니다.");
+		}
+		
+		Statement stmt = conn.createStatement();
+		Statement stmt1 = conn.createStatement();
+		
+		String sql = "";
+		String sqlCount = "SELECT COUNT(*) FROM board";
+		ResultSet rs = stmt.executeQuery(sqlCount);
+		
+		if(rs.next()) {
+			total = rs.getInt(1);
+		}
+		
+		int sort = 1;
+		String sqlSort = "SELECT NUM FROM board ORDER BY REF DESC, STEP ASC";
+		rs = stmt.executeQuery(sqlSort);
+		
+		while(rs.next())
+		{
+			int stepNum = rs.getInt(1);
+			sql = "UPDATE board SET STEP2=" + sort + " WHERE NUM=" + stepNum;
+			stmt1.executeUpdate(sql);
+			sort++;
+		}
+		
+		allPage = (int)Math.ceil(total/(double)ROWSIZE);
+		
+		if(endPage > allPage)
+		{
+			endPage = allPage;
+		}
+		
+		out.print("총 게시물 : " + total + "개");
+		
+		String sqlList = "SELECT NUM, USERNAME, TITLE, TIME, HIT, INDENT FROM board"
+				+ " WHERE STEP2 >=" + start + " AND STEP2 <=" + end + " ORDER BY STEP2 ASC";
+		rs = stmt.executeQuery(sqlList);
+%>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tr height="5"><td width="5"></td></tr>
 		<tr style="background:url('img/table_mid.gif') repeat-x; text-align:center;">
@@ -64,58 +92,72 @@
 			<td width="7"><img src="img/table_right.gif" width="5" height="30" /></td>
 		</tr>
 <%
-	if(total==0) {
+		if(total==0) {
 %>
 		<tr align="center" bgcolor="#FFFFFF" height="30">
 			<td colspan="6">등록된 글이 없습니다.</td>
 		</tr>
 <%
-	} else {
-		for(int i=ROWSIZE*(pg-1); i<end; i++)
-		{
-			VO vo = aList.get(i);
-			indent = vo.getIndent();
-			int idx = vo.getNum();
+		} else {
+			while(rs.next()) {
+				int idx = rs.getInt(1);
+				String name = rs.getString(2);
+				String title = rs.getString(3);
+				String time = rs.getString(4);
+				int hit = rs.getInt(5);
+				int indent = rs.getInt(6);
+				
+				Date date = new Date();
+				SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
+				String year = (String)simpleDate.format(date);
+				String yea = time.substring(0,10);
 %>
 		<tr height="25" align="center">
-			<td align="center">&nbsp;</td>
-			<td align="center"><%=idx %></td>
+			<td>&nbsp;</td>
+			<td><%=idx %></td>
 			<td align="left">
 <%
-			for(int j=0; j<indent; j++)
-			{
+				for(int j=0; j<indent; j++)
+				{
 %>
 				&nbsp;&nbsp;&nbsp;
 <%
-			}
+				}
 
-			if(indent!=0)
-			{
+				if(indent!=0)
+				{
 %>
 				<img src='img/reply_icon.gif' />
 <%
-			}
+				}
 %>
-				<a href="view.jsp?idx=<%=idx %>&pg=<%=pg %>"><%=vo.getTitle() %></a>
+				<a href="view.jsp?idx=<%=idx %>&pg=<%=pg %>"><%=title %></a>
 <%
-			if(vo.isDayNew())
-			{
+				if(year.equals(yea))
+				{
 %>
 				<img src='img/new.jpg' />
 <%
-			}
+				}
 %>
 			</td>
-			<td align="center"><%=vo.getName() %></td>
-			<td align="center"><%=vo.getTime() %></td>
-			<td align="center"><%=vo.getHit() %></td>
-			<td align="center">&nbsp;</td>
+			<td align="center"><%=name %></td>
+			<td align="center"><%=yea %></td>
+			<td align="center"><%=hit %></td>
+			<td>&nbsp;</td>
 		</tr>
 		<tr height="1" bgcolor="#020202">
 			<td colspan="6"></td>
 		</tr>
 <%
+			}
 		}
+
+		rs.close();
+		stmt.close();
+		conn.close();
+	} catch(SQLException e) {
+		out.println(e.toString());
 	}
 %>
 		<tr height="1" bgcolor="#82B5DF">

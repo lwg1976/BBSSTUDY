@@ -1,15 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" errorPage="DBError.jsp" %>
-<%@ page import="bbsModel1.*" %>
+<jsp:useBean id="bbsView" class="model1.BBSView" />
+<jsp:setProperty name="bbsView" property="num" value="${parm.idx}" />
+<jsp:setProperty name="bbsView" property="pg" value="${parm.pg}" />
 
-<jsp:useBean id="dao" class="bbsModel1.DAO" />
-
-<%
-	int idx = Integer.parseInt(request.getParameter("idx"));
-	int pg = Integer.parseInt(request.getParameter("pg"));
-	VO vo = dao.getView(idx);
-	dao.UpdateHit(idx);
-%>
+<% bbsView.readDB(); %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -35,41 +30,41 @@
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">글번호</td>
-						<td width="319"><%=idx %></td>
+						<td width="319">${bbsView.num}</td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">조회수</td>
-						<td width="319"><%=vo.getHit() %></td>
+						<td width="319">${bbsView.hit}</td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">이름</td>
-						<td width="319"><%=vo.getName() %></td>
+						<td width="319">${bbsView.userName}</td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">작성일</td>
-						<td width="319"><%=vo.getTime() %></td>
+						<td width="319">${bbsView.date}</td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">제목</td>
-						<td width="319"><%=vo.getTitle() %></td>
+						<td width="319">${bbsView.title}</td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
-						<td width="399" colspan="2" height="200"><%=vo.getMemo() %></td>
+						<td width="399" colspan="2" height="200">${bbsView.memo}</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
@@ -77,10 +72,10 @@
 						<td width="0">&nbsp;</td>
 						<td colspan="2" width="399">
 							<input type=button value="글쓰기" Onclick="window.location='write.jsp'" />
-							<input type=button value="답글" OnClick="window.location='reply.jsp?idx=<%=idx %>&pg=<%=pg %>'" />
-							<input type=button value="목록" Onclick="window.location='list.jsp?pg=<%=pg %>'" />
-							<input type=button value="수정" Onclick="window.location='modify.jsp?idx=<%=idx %>&pg=<%=pg %>'" />
-							<input type=button value="삭제" Onclick="window.location='delete.jsp?idx=<%=idx %>&pg=<%=pg %>'" />
+							<input type=button value="답글" OnClick="window.location='reply.jsp?idx=${bbsView.num}&pg=${bbsView.pg}'" />
+							<input type=button value="목록" Onclick="window.location='list.jsp?pg=${bbsView.pg}'" />
+							<input type=button value="수정" Onclick="window.location='modify.jsp?idx=${bbsView.num}&pg=${bbsView.pg}'" />
+							<input type=button value="삭제" Onclick="window.location='delete.jsp?idx=${bbsView.num}&pg=${bbsView.pg}'" />
 						</td>
 						<td width="0">&nbsp;</td>
 					</tr>

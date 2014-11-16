@@ -1,14 +1,34 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" errorPage="DBError.jsp" %>
-<%@ page import="bbsModel1.*" %>
-
-<jsp:useBean id="dao" class="bbsModel1.DAO" />
+    pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
 
 <%
 	int idx = Integer.parseInt(request.getParameter("idx"));
 	int pg = Integer.parseInt(request.getParameter("pg"));
-	VO vo = dao.getView(idx);
-	dao.UpdateHit(idx);
+	
+	try {
+		Class.forName("org.apache.commons.dbcp.PoolingDriver");
+		Connection conn = DriverManager.getConnection
+				("jdbc:apache:commons:dbcp:/wdbpool");
+		
+		if(conn==null)
+		{
+			throw new Exception("데이터베이스에 연결할 수 없습니다.");
+		}
+		
+		Statement stmt = conn.createStatement();
+		
+		String sql = "SELECT USERNAME, TITLE, MEMO, TIME, HIT FROM board WHERE NUM=" + idx;
+		ResultSet rs = stmt.executeQuery(sql);
+		
+		if(rs.next())
+		{
+			String name = rs.getString(1);
+			String title = rs.getString(2);
+			String memo = rs.getString(3);
+			String time = rs.getString(4);
+			int hit = rs.getInt(5);
+			hit++;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -42,35 +62,47 @@
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">조회수</td>
-						<td width="319"><%=vo.getHit() %></td>
+						<td width="319"><%=hit %></td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">이름</td>
-						<td width="319"><%=vo.getName() %></td>
+						<td width="319"><%=name %></td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">작성일</td>
-						<td width="319"><%=vo.getTime() %></td>
+						<td width="319"><%=time %></td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">제목</td>
-						<td width="319"><%=vo.getTitle() %></td>
+						<td width="319"><%=title %></td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr>
 						<td width="0">&nbsp;</td>
-						<td width="399" colspan="2" height="200"><%=vo.getMemo() %></td>
+						<td width="399" colspan="2" height="200"><%=memo %></td>
 					</tr>
+<%
+			sql = "UPDATE board SET HIT=" + hit + " WHERE NUM=" + idx;
+			stmt.executeUpdate(sql);
+			
+			rs.close();
+			stmt.close();
+			conn.close();
+		}
+	} catch(SQLException e) {
+		
+	}
+%>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr height="1" bgcolor="#dddddd"><td colspan="4" width="407"></td></tr>
 					<tr align="center">
